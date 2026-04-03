@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  # AI 助手后端服务
+  ai-assistant:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8081:8081"
+    environment:
+      - DB_URL=jdbc:mysql://mysql:3306/ai_assistant
+      - DB_USERNAME=root
+      - DB_PASSWORD=root123
+      - ENCRYPTION_KEY=${ENCRYPTION_KEY:-change-this-key-in-production}
+    depends_on:
+      - mysql
+    networks:
+      - ai-assistant-network
+    restart: unless-stopped
+
+  # MySQL 数据库
+  mysql:
+    image: mysql:8.0
+    ports:
+      - "3306:3306"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root123
+      - MYSQL_DATABASE=ai_assistant
+    volumes:
+      - mysql-data:/var/lib/mysql
+    networks:
+      - ai-assistant-network
+    restart: unless-stopped
+
+  # AI 助手前端 (可选)
+  ai-assistant-frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:80"
+    depends_on:
+      - ai-assistant
+    networks:
+      - ai-assistant-network
+    restart: unless-stopped
+
+networks:
+  ai-assistant-network:
+    driver: bridge
+
+volumes:
+  mysql-data:

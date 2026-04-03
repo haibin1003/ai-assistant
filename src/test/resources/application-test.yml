@@ -1,0 +1,28 @@
+server:
+  port: 0
+
+spring:
+  datasource:
+    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1
+    username: sa
+    password:
+    driver-class-name: org.h2.Driver
+  jpa:
+    hibernate:
+      ddl-auto: create-drop
+    show-sql: false
+  flyway:
+    enabled: false
+
+ai-assistant:
+  encryption:
+    key: test-encryption-key-12345
+  session:
+    default-expire-hours: 24
+  llm:
+    default-provider: deepseek
+
+logging:
+  level:
+    root: WARN
+    com.ai.assistant: DEBUG

@@ -1,0 +1,81 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: ai-assistant-service
+
+  # MySQL数据库（生产环境）
+  datasource:
+    url: jdbc:mysql://114.66.38.81:3306/ai_assistant?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: root123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
+ai-assistant:
+  encryption:
+    key: dev-encryption-key-32-characters-long
+
+  session:
+    default-expire-hours: 24
+    cleanup-interval-ms: 3600000
+
+  chat:
+    max-tool-rounds: 10
+    max-history-messages: 20
+
+  llm:
+    default-provider: deepseek
+    deepseek:
+      model: deepseek-chat
+      timeout-ms: 120000
+      api-url: https://api.deepseek.com/v1/chat/completions
+
+  search:
+    default-provider: serper
+    serper:
+      api-url: https://google.serper.dev/search
+      timeout-ms: 30000
+
+  minio:
+    enabled: true
+    endpoint: http://114.66.38.81:9000
+    access-key: minioadmin
+    secret-key: minioadmin123
+    bucket: ai-assistant
+    region: us-east-1
+
+  document:
+    minio:
+      enabled: true
+
+  osrm:
+    base-url: http://localhost:8080
+
+logging:
+  level:
+    root: INFO
+    com.ai.assistant: DEBUG

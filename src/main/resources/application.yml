@@ -1,0 +1,127 @@
+server:
+  port: 8081
+  servlet:
+    encoding:
+      charset: UTF-8
+      enabled: true
+      force: true
+      force-request: true
+      force-response: true
+
+spring:
+  application:
+    name: ai-assistant-service
+
+  datasource:
+    url: jdbc:mysql://114.66.38.81:3306/ai_assistant?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true&characterEncoding=UTF-8&useUnicode=true
+    username: root
+    password: root123
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: 10
+      minimum-idle: 5
+      idle-timeout: 300000
+      connection-timeout: 20000
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+        dialect: org.hibernate.dialect.MySQLDialect
+
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    locations: classpath:db/migration
+
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+
+# AI Assistant Configuration
+ai-assistant:
+  # Encryption key for sensitive data
+  encryption:
+    key: ${ENCRYPTION_KEY:change-this-in-production}
+
+  # Session configuration
+  session:
+    default-expire-hours: 24
+    cleanup-interval-ms: 3600000  # 1 hour
+
+  # Chat configuration
+  chat:
+    max-tool-rounds: 10
+    max-history-messages: 20
+
+  # LLM configuration
+  llm:
+    default-provider: ${LLM_PROVIDER:deepseek}
+    deepseek:
+      model: deepseek-chat
+      timeout-ms: 120000
+      api-url: https://api.deepseek.com/v1/chat/completions
+    openai:
+      model: gpt-4o
+      timeout-ms: 120000
+      api-url: https://api.openai.com/v1/chat/completions
+    claude:
+      model: claude-sonnet-4-20250514
+      timeout-ms: 120000
+      api-url: https://api.anthropic.com/v1/messages
+
+  # Search configuration
+  search:
+    default-provider: ${SEARCH_PROVIDER:serper}
+    serper:
+      api-url: https://google.serper.dev/search
+      timeout-ms: 30000
+    tavily:
+      api-url: https://api.tavily.com/search
+      timeout-ms: 30000
+
+  # Browser automation
+  browser:
+    enabled: ${BROWSER_ENABLED:false}
+    playwright-url: ${PLAYWRIGHT_URL:}
+
+  # Skill storage (independent of document storage)
+  skill:
+    minio:
+      enabled: ${SKILL_MINIO_ENABLED:false}
+
+  # Document generation
+  document:
+    storage:
+      path: ${DOCUMENT_STORAGE_PATH:./documents}
+    minio:
+      enabled: true
+    expire:
+      hours: 24
+
+  # MinIO Object Storage
+  minio:
+    enabled: ${MINIO_ENABLED:true}
+    endpoint: ${MINIO_ENDPOINT:http://114.66.38.81:9000}
+    access-key: ${MINIO_ACCESS_KEY:minioadmin}
+    secret-key: ${MINIO_SECRET_KEY:minioadmin123}
+    bucket: ${MINIO_BUCKET:ai-assistant}
+
+  # MCP configuration
+  mcp:
+    timeout-ms: 30000
+    retry-count: 2
+
+logging:
+  file:
+    name: logs/ai-assistant.log
+  level:
+    root: INFO
+    com.ai.assistant: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: DEBUG
